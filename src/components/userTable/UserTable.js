@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
+import { useState } from "react";
 
 import {useHttp} from '../../hooks/http.hook';
 import { usersFetching, usersFetched, usersFetchingError } from '../../actions';
@@ -11,13 +12,21 @@ const UserTable = () => {
     const dispatch = useDispatch();
     const {request} = useHttp();
 
+    const [filteredUsers, setFilteredUsers] = useState(users);
+
     useEffect(() => {
         dispatch(usersFetching());
         request("https://jsonplaceholder.typicode.com/users/")
             .then(data => dispatch(usersFetched(data)))
             .catch(() => dispatch(usersFetchingError()))
+
         // eslint-disable-next-line
     }, []);
+
+    useEffect(() => {
+        setFilteredUsers(users);
+    }, [users]);
+
 
     if (usersLoadingStatus === "loading") {
         return <h5 className="">Loading...</h5>
@@ -48,7 +57,17 @@ const UserTable = () => {
         })
     }
 
-    const elements = renderUsersList(users);
+    function handleInputChange(e) {
+        const searchString = e.target.value;
+
+        const filteredItems = users.filter((item) =>
+            item.name.toLowerCase().includes(searchString.toLowerCase())
+        );
+
+        setFilteredUsers(filteredItems);
+    } 
+    
+    let elements = renderUsersList(filteredUsers);
 
     return (
         <section className="users-box">
@@ -61,6 +80,20 @@ const UserTable = () => {
                                 <th>Username</th> 
                                 <th>Email</th>
                                 <th>Phone</th>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <p>
+                                        <label htmlFor="name">Seach by name</label>
+                                    </p>
+
+                                    <p>
+                                        <input onChange={handleInputChange} type="text" id="name" name="name" />
+                                    </p>
+                                </th>
+                                <th></th> 
+                                <th></th>
+                                <th></th>
                             </tr>
                         </thead>
 
