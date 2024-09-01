@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/SmartHR/static/css/main.ba011f4f.css",
+    "main.js": "/SmartHR/static/js/main.9709142c.js",
+    "static/js/453.d43a8cbd.chunk.js": "/SmartHR/static/js/453.d43a8cbd.chunk.js",
+    "index.html": "/SmartHR/index.html",
+    "main.ba011f4f.css.map": "/SmartHR/static/css/main.ba011f4f.css.map",
+    "main.9709142c.js.map": "/SmartHR/static/js/main.9709142c.js.map",
+    "453.d43a8cbd.chunk.js.map": "/SmartHR/static/js/453.d43a8cbd.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.ba011f4f.css",
+    "static/js/main.9709142c.js"
+  ]
+}
