@@ -1,16 +1,21 @@
-import { useEffect } from "react";
+import {useState,  useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
-import { useState } from "react";
 
 import {useHttp} from '../../hooks/http.hook';
-import { usersFetching, usersFetched, usersFetchingError } from '../../actions';
-
+import {usersFetching, usersFetched, usersFetchingError } from '../../actions';
 import SearchFilter from "../searchFilter/SearchFilter";
+import {User} from '../../user';
 
 import './UserTable.css';
 
+interface IState {
+    users: User[];
+    usersLoadingStatus: string
+}
+
 const UserTable = () => {
-    const {users, usersLoadingStatus} = useSelector(state => state);
+    const {users, usersLoadingStatus} = useSelector((state: IState) => state);
+    
     const dispatch = useDispatch();
     const {request} = useHttp();
 
@@ -35,8 +40,7 @@ const UserTable = () => {
             filterValue = activeFilter.value;
 
         if (users.length > 0) { 
-            const filteredItems = users.filter((item) => {
-
+            const filteredItems = users.filter((item: any) => {
                 return item[filterName].toLowerCase().includes(filterValue.toLowerCase())
             });
     
@@ -44,15 +48,13 @@ const UserTable = () => {
         }
     }, [activeFilter]);
 
-
     if (usersLoadingStatus === "loading") {
         return <h5 className="">Loading...</h5>
     } else if (usersLoadingStatus === "error") {
         return <h5 className="">Something went wrong, please try again later!</h5>
     }
 
-    const renderUsersList = (arr) => {
-
+    const renderUsersList = (arr: User[]) => {
         if (arr.length === 0) {
             return (
                 <tr className="">
@@ -61,7 +63,7 @@ const UserTable = () => {
             )
         }
 
-        return arr.map((item) => {
+        return arr.map((item: User) => {
             const {id, name, username, email, phone} = item;
             return  (
                 <tr key={id}>
@@ -74,8 +76,7 @@ const UserTable = () => {
         })
     }
 
-
-    const onFilterUpdate = (e) => {
+    const onFilterUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
         const searchString = e.target.value,
         filterName = e.target.id;
 
@@ -94,12 +95,12 @@ const UserTable = () => {
 
     const filtersArray = ['name', 'username', 'email', 'phone'];
 
-    const renderFilters = (arr) => {
+    const renderFilters = (arr: string[]) => {
         if (arr.length > 0) {
-            return arr.map((item) => {
+            return arr.map((item: string) => {
                 return(
                     <th key={item}>
-                        <SearchFilter filter={{name: item}} onFilterUpdate={(e) => onFilterUpdate(e)} />
+                        <SearchFilter filter={item} onFilterUpdate={(e: React.ChangeEvent<HTMLInputElement>) => onFilterUpdate(e)} />
                     </th>  
                 ) 
             })
@@ -108,9 +109,9 @@ const UserTable = () => {
 
     const allFilters = renderFilters(filtersArray);
 
-    const renderTitles = (arr) => {
+    const renderTitles = (arr: string[]) => {
         if (arr.length > 0) {
-            return arr.map((item) => {
+            return arr.map((item: string) => {
                 return <th key={item}>{item}</th>
             })
         }

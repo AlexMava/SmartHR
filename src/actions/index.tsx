@@ -1,10 +1,12 @@
+import {User} from '../user';
+
 export const usersFetching = () => {
     return {
         type: 'USERS_FETCHING'
     }
 }
 
-export const usersFetched = (users: any) => {
+export const usersFetched = (users: User[]) => {
     return {
         type: 'USERS_FETCHED',
         payload: users

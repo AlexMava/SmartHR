@@ -1,6 +1,7 @@
 const AppFooter = () => {
-    const d = new Date();
-    let year = d.getFullYear();
+    const date = new Date(),
+        year = date.getFullYear();
+
     return (
         <footer className='footer'>
             <div className="container">

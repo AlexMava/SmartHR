@@ -1,10 +1,11 @@
+import { AnyAction } from 'redux';
+
 const initialState = {
     users: [],
-    usersLoadingStatus: 'idle',
-    filters: []
+    usersLoadingStatus: 'idle'
 }
 
-const reducer = (state = initialState, action: any) => {
+const reducer = (state = initialState, action: AnyAction) => {
     switch (action.type) {
         case 'USERS_FETCHING':
             return {
