@@ -18,3 +18,10 @@ export const usersFetchingError = () => {
         type: 'USERS_FETCHING_ERROR'
     }
 }
+
+export const filtersUpdated = (filter: any) => {
+    return {
+        type: 'FILTERS_UPDATED',
+        payload: filter
+    }
+}

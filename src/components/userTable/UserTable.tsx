@@ -1,8 +1,8 @@
-import {useState,  useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 
 import {useHttp} from '../../hooks/http.hook';
-import {usersFetching, usersFetched, usersFetchingError } from '../../actions';
+import {usersFetching, usersFetched, usersFetchingError, filtersUpdated} from '../../actions';
 import SearchFilter from "../searchFilter/SearchFilter";
 import {User} from '../../user';
 
@@ -10,17 +10,22 @@ import './UserTable.css';
 
 interface IState {
     users: User[];
-    usersLoadingStatus: string
+    usersLoadingStatus: string,
+    filters: any
 }
 
 const UserTable = () => {
-    const {users, usersLoadingStatus} = useSelector((state: IState) => state);
+    const {users, usersLoadingStatus, filters} = useSelector((state: IState) => state);
+
+    const filterName = Object.keys(filters[0])[0],
+        filterValue = filters[0][filterName];
     
     const dispatch = useDispatch();
     const {request} = useHttp();
 
-    const [filteredUsers, setFilteredUsers] = useState(users);
-    const [activeFilter, setActiveFilter] = useState({name: 'name', value: ''});
+    const filteredUsersList = useMemo(() => {
+        return users.filter((user: any) => user[filterName].toLowerCase().includes(filterValue.toLowerCase()));
+      }, [users, filterValue]);
 
     useEffect(() => {
         dispatch(usersFetching());
@@ -30,23 +35,6 @@ const UserTable = () => {
 
         // eslint-disable-next-line
     }, []);
-
-    useEffect(() => {
-        setFilteredUsers(users);
-    }, [users]);
-
-    useEffect(() => {
-        const filterName = activeFilter.name,
-            filterValue = activeFilter.value;
-
-        if (users.length > 0) { 
-            const filteredItems = users.filter((item: any) => {
-                return item[filterName].toLowerCase().includes(filterValue.toLowerCase())
-            });
-    
-            setFilteredUsers(filteredItems);
-        }
-    }, [activeFilter]);
 
     if (usersLoadingStatus === "loading") {
         return <h5 className="">Loading...</h5>
@@ -80,10 +68,9 @@ const UserTable = () => {
         const searchString = e.target.value,
         filterName = e.target.id;
 
-        setActiveFilter({name: filterName, value: searchString});
+        dispatch(filtersUpdated([{[filterName]: searchString}]));
 
         const searchInputs = document.querySelectorAll("input");
-
         searchInputs.forEach((input) => {
             if (input !== e.target) {
                 input.value = '';
@@ -91,7 +78,7 @@ const UserTable = () => {
         });
     };
     
-    let elements = renderUsersList(filteredUsers);
+    let elements = renderUsersList(filteredUsersList);
 
     const filtersArray = ['name', 'username', 'email', 'phone'];
 
