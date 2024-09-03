@@ -23,3 +23,5 @@ thead th, tbody td {width: 25%;}
   border-radius: 15px;
   box-sizing: border-box;
 }
+
+.table-status-field h5 {text-align: center;}

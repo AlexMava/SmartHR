@@ -1,11 +1,10 @@
-import { useEffect, useMemo } from "react";
+import { useEffect} from "react";
 import { useDispatch, useSelector } from 'react-redux';
 
 import {useHttp} from '../../hooks/http.hook';
-import {usersFetching, usersFetched, usersFetchingError, filtersUpdated} from '../../actions';
+import {usersFetching, usersFetched, usersFetchingError} from '../../actions';
 import SearchFilter from "../searchFilter/SearchFilter";
 import {User} from '../../user';
-
 import './UserTable.css';
 
 interface IState {
@@ -16,40 +15,27 @@ interface IState {
 
 const UserTable = () => {
     const {users, usersLoadingStatus, filters} = useSelector((state: IState) => state);
-
-    const filterName = Object.keys(filters[0])[0],
-        filterValue = filters[0][filterName];
-    
-    const dispatch = useDispatch();
+   
     const {request} = useHttp();
-
-    const filteredUsersList = useMemo(() => {
-        return users.filter((user: any) => user[filterName].toLowerCase().includes(filterValue.toLowerCase()));
-      }, [users, filterValue]);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         dispatch(usersFetching());
         request("https://jsonplaceholder.typicode.com/users/")
             .then(data => dispatch(usersFetched(data)))
             .catch(() => dispatch(usersFetchingError()))
-
         // eslint-disable-next-line
     }, []);
 
-    if (usersLoadingStatus === "loading") {
-        return <h5 className="">Loading...</h5>
-    } else if (usersLoadingStatus === "error") {
-        return <h5 className="">Something went wrong, please try again later!</h5>
+    function filterUsers(users: User[], filters: any) {
+        return users.filter((user: any) => user['name'].toLowerCase().includes(filters['name'].toLowerCase())
+            && user['username'].toLowerCase().includes(filters['username'].toLowerCase())
+            && user['email'].toLowerCase().includes(filters['email'].toLowerCase())
+            && user['phone'].toLowerCase().includes(filters['phone'].toLowerCase()));
     }
 
     const renderUsersList = (arr: User[]) => {
-        if (arr.length === 0) {
-            return (
-                <tr className="">
-                    <td>No users found!</td>
-                </tr>
-            )
-        }
+        if (arr.length === 0) return <tr className="table-status-field"><td colSpan={4}><h5 className="">No users found!</h5></td></tr>
 
         return arr.map((item: User) => {
             const {id, name, username, email, phone} = item;
@@ -63,48 +49,31 @@ const UserTable = () => {
             )
         })
     }
-
-    const onFilterUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const searchString = e.target.value,
-        filterName = e.target.id;
-
-        dispatch(filtersUpdated([{[filterName]: searchString}]));
-
-        const searchInputs = document.querySelectorAll("input");
-        searchInputs.forEach((input) => {
-            if (input !== e.target) {
-                input.value = '';
-            }
-        });
-    };
     
-    let elements = renderUsersList(filteredUsersList);
-
-    const filtersArray = ['name', 'username', 'email', 'phone'];
+    let elements = renderUsersList(filterUsers(users, filters));
+    const filtersArray = Object.keys(filters);
 
     const renderFilters = (arr: string[]) => {
         if (arr.length > 0) {
             return arr.map((item: string) => {
                 return(
                     <th key={item}>
-                        <SearchFilter filter={item} onFilterUpdate={(e: React.ChangeEvent<HTMLInputElement>) => onFilterUpdate(e)} />
+                        <SearchFilter filter={item} />
                     </th>  
                 ) 
             })
         }
     }
 
-    const allFilters = renderFilters(filtersArray);
-
     const renderTitles = (arr: string[]) => {
-        if (arr.length > 0) {
-            return arr.map((item: string) => {
-                return <th key={item}>{item}</th>
-            })
-        }
+        if (arr.length > 0) return arr.map((item: string) => <th key={item}>{item}</th>)
     }
 
-    const allTitles = renderTitles(filtersArray);
+    if (usersLoadingStatus === "loading") {
+        return <h5 className="">Loading...</h5>
+    } else if (usersLoadingStatus === "error") {
+        return <h5 className="">Something went wrong, please try again later!</h5>
+    }
 
     return (
         <section className="users-box">
@@ -112,18 +81,11 @@ const UserTable = () => {
                 <div className="row">
                     <table>
                         <thead>
-                            <tr>
-                                {allFilters}
-                            </tr>
-
-                            <tr>
-                                {allTitles}
-                            </tr>
+                            <tr>{renderFilters(filtersArray)}</tr>
+                            <tr>{renderTitles(filtersArray)}</tr>
                         </thead>
 
-                        <tbody>
-                            {elements}
-                        </tbody>
+                        <tbody>{elements}</tbody>
                     </table>
                 </div>
             </div>

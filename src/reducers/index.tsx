@@ -3,7 +3,7 @@ import { AnyAction } from 'redux';
 const initialState = {
     users: [],
     usersLoadingStatus: 'idle',
-    filters: [{name: ''}]
+    filters: {name: '', username: '', email: '', phone: ''},
 }
 
 const reducer = (state = initialState, action: AnyAction) => {
@@ -25,9 +25,12 @@ const reducer = (state = initialState, action: AnyAction) => {
                 usersLoadingStatus: 'error'
             }
         case 'FILTERS_UPDATED':
+            const filterName = Object.keys(action.payload)[0],
+            filterValue = action.payload[filterName];
+            
             return {
                 ...state,
-                filters: action.payload
+                filters: {...state.filters, [filterName]: filterValue}
             }
         default: return state
     }

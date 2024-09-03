@@ -1,17 +1,21 @@
+import { useDispatch, useSelector } from 'react-redux';
+import { filtersUpdated } from '../../actions';
 type FilterdProps = {
-    filter: string;
-    onFilterUpdate: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    filter: string
 };
 
-const SearchFilter = ({filter, onFilterUpdate}: FilterdProps) => {
+const SearchFilter = ({filter}: FilterdProps) => {
+    const filters = useSelector((state: any) => state.filters);
+
+    const dispatch = useDispatch();
+    const onFilterUpdate = (e: React.ChangeEvent<HTMLInputElement>) => dispatch(filtersUpdated({[e.target.id]: e.target.value}));
+
     return (
         <>
-            <p>
-                <label htmlFor="name">Seach by {filter}</label>
-            </p>
+            <p><label htmlFor="name">Seach by {filter}</label></p>
 
             <p>
-                <input onChange={(e) => onFilterUpdate(e)} type="text" id={filter} />
+                <input value={filters[filter]} onChange={(e) => onFilterUpdate(e)} type="text" id={filter} />
             </p>
         </>
     )
