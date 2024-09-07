@@ -27,11 +27,9 @@ const UserTable = () => {
         // eslint-disable-next-line
     }, []);
 
+
     function filterUsers(users: User[], filters: any) {
-        return users.filter((user: any) => user['name'].toLowerCase().includes(filters['name'].toLowerCase())
-            && user['username'].toLowerCase().includes(filters['username'].toLowerCase())
-            && user['email'].toLowerCase().includes(filters['email'].toLowerCase())
-            && user['phone'].toLowerCase().includes(filters['phone'].toLowerCase()));
+        return users.filter((item: any) => Object.entries(filters).every(([key, value]: any) => item[key].toLowerCase().includes(value.toLowerCase())))
     }
 
     const renderUsersList = (arr: User[]) => {

@@ -45,7 +45,7 @@ You don’t have to ever use `eject`. The curated feature set is suitable for sm
 
 ### `npm run deploy`
 
-Push the React app to the GitHub repository
+Deploy React app to GitHub Pages
 
 ## Learn More
 
